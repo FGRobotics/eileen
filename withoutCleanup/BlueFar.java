@@ -23,7 +23,7 @@ import org.openftc.easyopencv.OpenCvWebcam;
 
 @Autonomous(name = "BlueFar")
 
-public class BlueLeft extends LinearOpMode {
+public class BlueFar extends LinearOpMode {
     public static final double TICKS_PER_REV = 384.5;
     public static final double MAX_RPM = 435;
     public static double WHEEL_RADIUS = 2; // in
