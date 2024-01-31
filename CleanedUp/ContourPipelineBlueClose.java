@@ -31,7 +31,7 @@ public class ContourPipelineBlueClose extends OpenCvPipeline {
             Mat circles = new Mat();
             Imgproc.HoughCircles(src, circles, Imgproc.HOUGH_GRADIENT, 1.0,
                     (double)src.rows()/5,
-                    70.0, 30.0, 60, 140);
+                    60.0, 30.0, 60, 140);
             //Candidate Selection
             boolean inCam = false;
             numCircles = circles.cols();

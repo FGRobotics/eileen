@@ -43,8 +43,8 @@ public class ContourPipelineBlueFar extends OpenCvPipeline {
 
             Mat circles = new Mat();
             Imgproc.HoughCircles(src, circles, Imgproc.HOUGH_GRADIENT, 1.0,
-                    (double)src.rows()/6, // change this value to detect circles with different distances to each other
-                    70.0, 30.0, 60, 140); // change the last two parameters
+                    (double)src.rows()/5, // change this value to detect circles with different distances to each other
+                    60.0, 30.0, 60, 140); // change the last two parameters
             // (min_radius & max_radius) to detect larger circles
 
             //Candidate Selection
