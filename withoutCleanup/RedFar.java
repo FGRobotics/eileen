@@ -23,7 +23,7 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-@Autonomous(name = "RedFar")
+@Autonomous(name = "RedFa")
 
 public class RedRight extends LinearOpMode {
     public static final double TICKS_PER_REV = 384.5;
