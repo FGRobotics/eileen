@@ -37,7 +37,7 @@ public class Teleop extends LinearOpMode{
     Acceleration gravity;
     DcMotor rightFront,leftFront,rightRear,leftRear,lslides,transfer, leds, xAxis, yAxis ;
 
-    Servo intakeAngle, airplane;
+    Servo intakeAngle, airplane, arm;
     CRServo intake, outtake;
     DistanceSensor frontDist;
     double intakeAngPoses[] = {0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0};
@@ -73,7 +73,7 @@ public class Teleop extends LinearOpMode{
         outtake = hardwareMap.get(CRServo.class, "outtake");
         intakeAngle = hardwareMap.get(Servo.class, "intakeAngle");
         intake = hardwareMap.get(CRServo.class, "intake");
-
+        arm = hardwareMap.get(Servo.class, "arm");
         frontDist = hardwareMap.get(DistanceSensor.class, "frontDist");
 
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
@@ -104,7 +104,7 @@ public class Teleop extends LinearOpMode{
 
             telemetry.addData("x: ", xAxis.getCurrentPosition()*X_MULTIPLIER);
             telemetry.addData("y: ", yAxis.getCurrentPosition()*Y_MULTIPLIER);
-
+            telemetry.addData("intakeAngle",intakeAngle.getPosition());
             telemetry.update();
         }
     }
@@ -139,7 +139,17 @@ public class Teleop extends LinearOpMode{
         intake.setPower(gamepad2.left_bumper  ? -1*gamepad2.right_trigger : gamepad2.right_trigger);
         transfer.setPower(gamepad2.left_bumper  ? -1*gamepad2.right_trigger : gamepad2.right_trigger);
 
+        if(gamepad2.dpad_up){
+            new Thread(()->{
+                arm.setPosition(1);
+            }).start();
+        }
 
+        if(gamepad2.dpad_down){
+            new Thread(()->{
+                arm.setPosition(0.6);
+            }).start();
+        }
 
         if(gamepad2.touchpad){
             new Thread(()->{
