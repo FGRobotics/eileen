@@ -76,7 +76,7 @@ public class ContourPipelineBlueFar extends OpenCvPipeline {
                     for (int i = (int) topLeft.x; i < (int) bottomRight.x; i++) {
                         for (int j = (int) topLeft.y; j < (int) bottomRight.y; j++) {
 
-                            if (end.get(j, i)[0] > 160) {
+                            if (end.get(j, i)[0] > 140) {
                                 accumulator++;
                             }
                         }

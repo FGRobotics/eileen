@@ -46,7 +46,7 @@ public class BlueNear extends LinearOpMode {
     private int kPtheta = 16;
 
     private int tickMark = 2;
-    ColorSensor tagScanner;
+    ColorSensor tagScanner, ground;
     private double startHeading = 0;
     DcMotor rightFront,leftFront,rightRear,leftRear, xAxis,yAxis,transfer, lslides ;
     CRServo outtake;
@@ -75,6 +75,7 @@ public class BlueNear extends LinearOpMode {
         outtake = hardwareMap.get(CRServo.class, "outtake");
 
         tagScanner = hardwareMap.get(ColorSensor.class, "color");
+        ground = hardwareMap.get(ColorSensor.class, "ground");
 
         lslides = hardwareMap.get(DcMotor.class, "slides");
         lslides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -103,7 +104,7 @@ public class BlueNear extends LinearOpMode {
         //OpenCV Pipeline
 
         Eileen robot = new Eileen(rightFront, leftFront, rightRear, leftRear, xAxis, yAxis, transfer, lslides, outtake,
-                tagScanner, frontDist, imu);
+                tagScanner, frontDist, imu, ground);
 
         ContourPipelineBlueClose myPipeline = new ContourPipelineBlueClose();
         webcam.setPipeline(myPipeline);
@@ -146,18 +147,22 @@ public class BlueNear extends LinearOpMode {
 
         waitForStart();
 
-        robot.odo(32, X_MULTIPLIER, 1, startHeading);//forward
 
 
         //branch out to drop on left
+
         if (tickMark == 3) {
+            robot.odo(32, X_MULTIPLIER, 1, startHeading);//forward
             sleep(200);
+
+
             robot.pivotLeft(startHeading + 90, 1);//pivot right
             sleep(200);
 
 
-
-            robot.odo(1, X_MULTIPLIER, 1, startHeading+90);//forward
+            robot.colorOdoBlue(1000,0, startHeading+90);
+            sleep(200);
+            robot.colorOdoBlue(5000,1000, startHeading+90);
             sleep(200);
 
             robot.spit();//drop
@@ -165,14 +170,14 @@ public class BlueNear extends LinearOpMode {
 
 
 
-            robot.odo(29.5, X_MULTIPLIER, 1, startHeading+90);//forward
+            robot.odo(26.5, X_MULTIPLIER, 1, startHeading+90);//forward
             sleep(200);
             //-------------------------------------------------------Creep Up
 
             robot.distance(4.5, startHeading+90);
             sleep(200);
             //---------------------------------------------------------COLOR Strafe
-            robot.colorStrafe(2.5,Y_MULTIPLIER,1,startHeading+90,tagScanner.alpha() > 70);
+            robot.colorStrafe(2,Y_MULTIPLIER,1,startHeading+90,tagScanner.alpha() > 200);
             sleep(200);
 
             robot.slides(1100,1);
@@ -191,19 +196,22 @@ public class BlueNear extends LinearOpMode {
 
         //branch out to drop on middle
         if (tickMark == 2) {
-            robot.odo(3, X_MULTIPLIER, 1, startHeading);//forward
-
+            robot.odo(25, X_MULTIPLIER, 1, startHeading);//forward
             sleep(200);
+
             robot.turnRight(startHeading-180);//flip 180
             sleep(200);
 
-            robot.odo(9, X_MULTIPLIER, 1, startHeading-180);//forward
+            robot.colorOdoBlue(1000,0, startHeading-180);
             sleep(200);
+            robot.colorOdoBlue(5000,1000, startHeading-180);
+            sleep(200);
+
 
             robot.spit();//drop
             sleep(200);
 
-            robot.odo(6.5, X_MULTIPLIER, 1, startHeading-180);//forward
+            robot.odo(4.5, X_MULTIPLIER, 1, startHeading-180);//forward
             sleep(200);
 
             robot.turnRight(startHeading+90);//face the board
@@ -211,9 +219,13 @@ public class BlueNear extends LinearOpMode {
 
             robot.odo(16, X_MULTIPLIER, 1, startHeading + 90);//forward
             sleep(200);
+
+            robot.colorStrafe(2.5,Y_MULTIPLIER,1,startHeading+90, (tagScanner.alpha() > 200));
+            sleep(200);
             //-------------------------------------------------------Creep Up-------------------------------------
             robot.distance(4.5, startHeading+90);
             sleep(200);
+
 
             robot.slides(1100,1);
             sleep(200);
@@ -223,7 +235,7 @@ public class BlueNear extends LinearOpMode {
             robot.homeSlides();
             sleep(200);
 
-            robot.strafe(20,Y_MULTIPLIER,-1,startHeading+90);
+            robot.strafe(18,Y_MULTIPLIER,-1,startHeading+90);
             sleep(200);
             robot.odo(4, X_MULTIPLIER, 1, startHeading+90);//forward
 
@@ -231,13 +243,19 @@ public class BlueNear extends LinearOpMode {
 
 
         if (tickMark == 1) {
+            robot.odo(32, X_MULTIPLIER, 1, startHeading);//forward
             sleep(200);
+
             robot.pivotLeft(startHeading + 90,1);//pivot right
             sleep(200);
 
 
 
-            robot.odo(16, X_MULTIPLIER, 1, startHeading+90);//forward
+            robot.odo(15, X_MULTIPLIER, 1, startHeading+90);//forward
+            sleep(200);
+            robot.colorOdoBlue(1000,0, startHeading+90);
+            sleep(200);
+            robot.colorOdoBlue(5000,1000, startHeading+90);
             sleep(200);
 
             robot.spit();//drop
@@ -251,7 +269,7 @@ public class BlueNear extends LinearOpMode {
             robot.distance(4.5, startHeading+90);
             sleep(200);
             //----------------------------------------------------TAG SCAN???
-            robot.colorStrafe(6,Y_MULTIPLIER,-1,startHeading+90, tagScanner.argb() < 180000000 );
+            robot.colorStrafe(7,Y_MULTIPLIER,-1,startHeading+90, tagScanner.argb() < 180000000 );
             sleep(200);
 
             robot.slides(1100,1);
@@ -263,7 +281,7 @@ public class BlueNear extends LinearOpMode {
             robot.homeSlides();
             sleep(200);
 
-            robot.strafe(20,Y_MULTIPLIER,-1,startHeading+90);
+            robot.strafe(15,Y_MULTIPLIER,-1,startHeading+90);
             sleep(200);
             robot.odo(4, X_MULTIPLIER, 1, startHeading+90);//forward
 

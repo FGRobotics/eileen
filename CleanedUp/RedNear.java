@@ -146,18 +146,18 @@ public class RedNear extends LinearOpMode {
 
         waitForStart();
 
-        robot.odo(32, X_MULTIPLIER, 1, startHeading);//forward
 
 
         //branch out to drop on left
         if (tickMark == 1) {
+            robot.odo(32, X_MULTIPLIER, 1, startHeading);//forward
             sleep(200);
             robot.pivotRight(startHeading - 90, 1);//pivot right
             sleep(200);
 
 
 
-            robot.odo(5, X_MULTIPLIER, 1, startHeading-90);//forward
+            robot.odo(5.8, X_MULTIPLIER, 1, startHeading-90);//forward
             sleep(200);
 
             robot.spit();//drop
@@ -171,7 +171,11 @@ public class RedNear extends LinearOpMode {
             robot.distance(4.5, startHeading-90);
             sleep(200);
 
-            robot.colorStrafe(5.25,Y_MULTIPLIER,-1,startHeading-90, (tagScanner.argb() < 180000000));
+            robot.colorStrafe(3.25,Y_MULTIPLIER,-1,startHeading-90, (tagScanner.argb() < 1000000000));
+            sleep(200);
+
+            //CREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEP FORWARD
+            robot.distance(4.5, startHeading-90);
             sleep(200);
 
             robot.slides(1100,1);
@@ -192,17 +196,17 @@ public class RedNear extends LinearOpMode {
 
         //branch out to drop on middle
         if (tickMark == 2) {
+            robot.odo(20.75, X_MULTIPLIER, 1, startHeading);//forward
             sleep(200);
             robot.turnRight(startHeading-180);//flip 180
             sleep(200);
 
-            robot.odo(8, X_MULTIPLIER, 1, startHeading-180);//forward
-            sleep(200);
+
 
             robot.spit();//drop
             sleep(200);
 
-            robot.odo(6, X_MULTIPLIER, 1, startHeading-180);//forward
+            robot.odo(2, X_MULTIPLIER, 1, startHeading-180);//forward
             sleep(200);
 
             robot.turnLeft(startHeading-90);//face the board
@@ -213,10 +217,8 @@ public class RedNear extends LinearOpMode {
             //CREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEP FORWARD
             robot.distance(4.5, startHeading-90);
             sleep(200);
-            robot.strafe(2,Y_MULTIPLIER,-1,startHeading-90);
-            sleep(200);
 
-            robot.slides(1075,1);
+            robot.slides(1100,1);
             sleep(200);
 
             robot.drop();
@@ -224,7 +226,7 @@ public class RedNear extends LinearOpMode {
             robot.slides(0, -1);
             sleep(200);
 
-            robot.strafe(20,Y_MULTIPLIER,1,startHeading-90);
+            robot.strafe(24,Y_MULTIPLIER,1,startHeading-90);
             sleep(200);
             robot.odo(4, X_MULTIPLIER, 1, startHeading-90);//forward
 
@@ -232,13 +234,17 @@ public class RedNear extends LinearOpMode {
 
 
         if (tickMark == 3) {
+            robot.odo(24, X_MULTIPLIER, 1, startHeading);//forward
             sleep(200);
+            robot.odo(12, X_MULTIPLIER, startHeading);
+            sleep(200);
+
             robot.pivotRight(startHeading - 90, 1);//pivot right
             sleep(200);
 
 
 
-            robot.odo(24, X_MULTIPLIER, 1, startHeading-90);//forward
+            robot.odo(22, X_MULTIPLIER, 1, startHeading-90);//forward
             sleep(200);
 
             robot.spit();//drop
@@ -246,13 +252,17 @@ public class RedNear extends LinearOpMode {
 
 
 
-            robot.odo(13.85, X_MULTIPLIER, 1, startHeading-90);//forward
+            robot.odo(15.85, X_MULTIPLIER, 1, startHeading-90);//forward
             sleep(200);
             //CREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEP FORWARD
             robot.distance(4.5, startHeading-90);
             sleep(200);
 
-            robot.colorStrafe(4.5,Y_MULTIPLIER,1,startHeading-90, (tagScanner.alpha() > 70));
+            robot.colorStrafe(5.5,Y_MULTIPLIER,1,startHeading-90, (tagScanner.alpha() >200));
+            sleep(200);
+
+            //CREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEP FORWARD
+            robot.distance(4.5, startHeading-90);
             sleep(200);
 
             robot.slides(1100,1);
@@ -263,11 +273,13 @@ public class RedNear extends LinearOpMode {
             robot.slides(0, -1);
             sleep(200);
 
-            robot.strafe(20,Y_MULTIPLIER,1,startHeading-90);
+            robot.strafe(22,Y_MULTIPLIER,1,startHeading-90);
             sleep(200);
             robot.odo(4, X_MULTIPLIER, 1, startHeading-90);//forward
 
         }
+
+
 
 
     }

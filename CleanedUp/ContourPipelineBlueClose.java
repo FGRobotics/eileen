@@ -57,7 +57,7 @@ public class ContourPipelineBlueClose extends OpenCvPipeline {
                     for (int i = (int) topLeft.x; i < (int) bottomRight.x; i++) {
                         for (int j = (int) topLeft.y; j < (int) bottomRight.y; j++) {
                             //loop through circle area and find pixels with a blue value greater than 160, then add to accumulator
-                            if (end.get(j, i)[0] > 160) {
+                            if (end.get(j, i)[0] > 140) {
                                 accumulator++;
                             }
                         }

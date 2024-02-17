@@ -15,7 +15,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 public class Eileen {
     DcMotor rightFront,leftFront,rightRear,leftRear, xAxis,yAxis,transfer, lslides ;
     CRServo outtake;
-    ColorSensor tagScanner;
+    ColorSensor tagScanner, ground;
     DistanceSensor frontDist;
     BNO055IMU imu;
     private int kPtheta = 16;
@@ -23,6 +23,24 @@ public class Eileen {
 
 
 
+    public Eileen(DcMotor rightFront, DcMotor leftFront, DcMotor rightRear, DcMotor leftRear,
+                  DcMotor xAxis, DcMotor yAxis, DcMotor transfer, DcMotor lslides, CRServo outtake,
+                  ColorSensor tagScanner, DistanceSensor frontDist, BNO055IMU imu, ColorSensor ground){
+        //Initialize everything
+        this.rightFront = rightFront;
+        this.leftFront = leftFront;
+        this.rightRear = rightRear;
+        this.leftRear = leftRear;
+        this.xAxis = xAxis;
+        this.yAxis = yAxis;
+        this.transfer = transfer;
+        this.lslides = lslides;
+        this.outtake = outtake;
+        this.tagScanner = tagScanner;
+        this.frontDist = frontDist;
+        this.imu = imu;
+        this.ground = ground;
+    }
     public Eileen(DcMotor rightFront, DcMotor leftFront, DcMotor rightRear, DcMotor leftRear,
                   DcMotor xAxis, DcMotor yAxis, DcMotor transfer, DcMotor lslides, CRServo outtake,
                   ColorSensor tagScanner, DistanceSensor frontDist, BNO055IMU imu){
@@ -70,10 +88,30 @@ public class Eileen {
         yAxis.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         xAxis.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }//Forward
+    public void odo(double dist, double tickstoinch, double straightHeading){
+        double ticks = Math.abs(dist/tickstoinch);
+        while (Math.abs(xAxis.getCurrentPosition()) < ticks){
+            double fix = odoPID(straightHeading);
+
+
+
+            rightFront.setPower((0.5+ fix));
+            leftFront.setPower((0.45 - fix));
+            leftRear.setPower((0.45  - fix));
+            rightRear.setPower((0.5 + fix));
+        }
+
+        rightFront.setPower(0);
+        leftFront.setPower(0);
+        leftRear.setPower(0);
+        rightRear.setPower(0);
+        yAxis.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        xAxis.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }//Overloaded Forward
     public void distance(double lowest, double straightHeading){
         ElapsedTime timer = new ElapsedTime();
         timer.reset();
-        while (frontDist.getDistance(DistanceUnit.INCH) > lowest && timer.seconds() < 3){
+        while (frontDist.getDistance(DistanceUnit.INCH) > 5 && timer.seconds() < 3){
             double fix = odoPID(straightHeading);
 
 
@@ -139,10 +177,10 @@ public class Eileen {
         angle = imuNormalize(angle, rangle);
         while (Math.abs(angle - rangle) > 1){
             if(Math.abs(angle - rangle) <30){
-                rightFront.setPower(-0.2);
-                leftFront.setPower(0.2);
-                leftRear.setPower(0.2);
-                rightRear.setPower(-0.2);
+                rightFront.setPower(-0.3);
+                leftFront.setPower(0.3);
+                leftRear.setPower(0.3);
+                rightRear.setPower(-0.3);
             }else{
                 rightFront.setPower(-0.4);
                 leftFront.setPower(0.4);
@@ -218,13 +256,13 @@ public class Eileen {
     }
     public void spit(){
         transfer.setPower(-1);
-        sleep(1.2);
+        sleep(0.5);
         transfer.setPower(0);
     }
     public void slides(int target, int reverse){
         ElapsedTime timer = new ElapsedTime();
         timer.reset();
-        while(reverse*lslides.getCurrentPosition() < Math.abs(target) &&timer.seconds() < 3){
+        while(reverse*lslides.getCurrentPosition() < Math.abs(1350) &&timer.seconds() < 3){
 
             lslides.setPower(reverse*0.7);
         }
@@ -233,7 +271,7 @@ public class Eileen {
     }
     public void drop(){
         outtake.setPower(-0.5);
-        sleep(2);
+        sleep(2.5);
         outtake.setPower(0);
     }
     public  void pivotRight(double angle, int direction){
@@ -265,10 +303,10 @@ public class Eileen {
         angle = imuNormalize(angle, rangle);
         while (Math.abs(angle - rangle) > 1){
             if(Math.abs(angle - rangle) <30){
-                rightFront.setPower(0.2);
-                leftFront.setPower(-0.2);
-                leftRear.setPower(-0.2);
-                rightRear.setPower(0.2);
+                rightFront.setPower(0.3);
+                leftFront.setPower(-0.3);
+                leftRear.setPower(-0.3);
+                rightRear.setPower(0.3);
             }else{
                 rightFront.setPower(0.4);
                 leftFront.setPower(-0.4);
@@ -301,4 +339,22 @@ public class Eileen {
         lslides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lslides.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
+    public void colorOdoBlue(int upperBound,int lowerBound, double straightHeading){
+
+        while (ground.blue() > lowerBound && ground.blue() < upperBound ){
+            double fix = odoPID(straightHeading);
+            rightFront.setPower((0.2+ fix));
+            leftFront.setPower((0.25 - fix));
+            leftRear.setPower((0.2  - fix));
+            rightRear.setPower((0.25 + fix));
+
+        }
+
+        rightFront.setPower(0);
+        leftFront.setPower(0);
+        leftRear.setPower(0);
+        rightRear.setPower(0);
+        yAxis.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        xAxis.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }//Overloaded Forward
 }

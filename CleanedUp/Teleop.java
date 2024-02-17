@@ -20,8 +20,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 @TeleOp(name = "tele")
 public class Teleop extends LinearOpMode{
-    private double actfieldCentricMultiplier = .7;
-    private double fieldCentricMultiplier = .7;
+    private double actfieldCentricMultiplier = 1;
+    private double fieldCentricMultiplier = 1;
     private double rotationalMult = .6;
     private int lowerBound = 0;
     double lastResetpos = 0.0;
@@ -31,7 +31,7 @@ public class Teleop extends LinearOpMode{
     public static double X_MULTIPLIER = .004; // Multiplier in the X direction- ticks to inches
     public static double Y_MULTIPLIER = .0041; // Multiplier in th
     BNO055IMU imu;
-    ColorSensor tagScanner;
+    ColorSensor tagScanner, ground;
     // State used for updating telemetry
     Orientation angles;
     Acceleration gravity;
@@ -69,6 +69,8 @@ public class Teleop extends LinearOpMode{
         transfer = hardwareMap.get(DcMotor.class, "transfer");
 
         tagScanner = hardwareMap.get(ColorSensor.class, "color");
+        ground = hardwareMap.get(ColorSensor.class, "ground");
+
         airplane = hardwareMap.get(Servo.class, "airplane");
         outtake = hardwareMap.get(CRServo.class, "outtake");
         intakeAngle = hardwareMap.get(Servo.class, "intakeAngle");
@@ -101,6 +103,9 @@ public class Teleop extends LinearOpMode{
             telemetry.addData("color: ", tagScanner.argb());
             telemetry.addData("color-alpha: ", tagScanner.alpha());
 
+            telemetry.addData("blue: ", ground.blue());
+            telemetry.addData("red: ", ground.red());
+
 
             telemetry.addData("x: ", xAxis.getCurrentPosition()*X_MULTIPLIER);
             telemetry.addData("y: ", yAxis.getCurrentPosition()*Y_MULTIPLIER);
@@ -111,10 +116,10 @@ public class Teleop extends LinearOpMode{
     public void gp1(){
         //Both the actFieldCentricMultipliers cancel out, so we are left with fieldCentricMultiplier being = to the right trigger value
         //It will also have the same sign as the actFieldCentric multiplier, which is the point of the math shown below
-        fieldCentricMultiplier = (gamepad1.right_trigger/actfieldCentricMultiplier)*Math.abs(actfieldCentricMultiplier);
+        fieldCentricMultiplier = gamepad1.right_trigger * actfieldCentricMultiplier;
         //Invert Joystick
         if (gamepad1.circle) {
-            actfieldCentricMultiplier = (actfieldCentricMultiplier == -0.7) ? 0.7 : -0.7;
+            actfieldCentricMultiplier = (actfieldCentricMultiplier == -1.0) ? 1.0 : -1.0;
         }
         if (gamepad1.cross && gamepad1.right_bumper) {
             airplane.setPosition(-1);
@@ -132,7 +137,7 @@ public class Teleop extends LinearOpMode{
 
         //Outtake
 
-        outtake.setPower(gamepad2.right_bumper ? -0.7 : gamepad2.right_stick_x*0.5);
+        outtake.setPower(gamepad2.right_bumper ? -0.6 : gamepad2.right_stick_x);
         //Intake
         intakeAngle.setPosition(intakeAngle.getPosition() + (gamepad2.right_stick_y*0.05));
 
@@ -147,7 +152,7 @@ public class Teleop extends LinearOpMode{
 
         if(gamepad2.dpad_down){
             new Thread(()->{
-                arm.setPosition(0.6);
+                arm.setPosition(0.7);
             }).start();
         }
 
@@ -157,7 +162,7 @@ public class Teleop extends LinearOpMode{
             }).start();
         }
 
-        xAxis.setPower(gamepad2.cross ? gamepad2.left_trigger : -gamepad2.left_trigger);
+        xAxis.setPower(gamepad2.left_bumper ? gamepad2.left_trigger : -gamepad2.left_trigger);
     }
     public void robotCentricPlus() {
         double x, y, mag, rads, rangle;

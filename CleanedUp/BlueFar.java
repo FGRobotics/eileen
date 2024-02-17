@@ -81,10 +81,13 @@ public class BlueFar extends LinearOpMode {
         tagScanner = hardwareMap.get(ColorSensor.class, "color");
         intakeAngle = hardwareMap.get(Servo.class, "intakeAngle");
         lslides = hardwareMap.get(DcMotor.class, "slides");
-        lslides.setDirection(DcMotorSimple.Direction.REVERSE);
 
         lslides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lslides.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        frontDist = hardwareMap.get(DistanceSensor.class, "frontDist");
+        tagScanner = hardwareMap.get(ColorSensor.class, "color");
+
 
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
 
@@ -154,9 +157,10 @@ public class BlueFar extends LinearOpMode {
 
         waitForStart();
 
-        robot.odo(37.5, X_MULTIPLIER, 1, startHeading);//forward
-
+        sleep(200);
         if(tickMark == 1) { //--------------------------------------------------------------Left mark--------------------
+            robot.odo(34.5, X_MULTIPLIER, 1, startHeading);//forward
+
 
             sleep(200);
             robot.pivotRight(startHeading-50, 1);
@@ -173,9 +177,11 @@ public class BlueFar extends LinearOpMode {
         }
 
         if(tickMark == 2) {//------------------------------------------------------Middle Mark----------------------------------------------
-
+            robot.odo(29.5, X_MULTIPLIER, 1, startHeading);//forward
             sleep(200);
-            robot.odo(3, X_MULTIPLIER, 1, startHeading);//forward
+            robot.odo(9, X_MULTIPLIER, startHeading);//forward
+            sleep(200);
+            robot.odo(1, X_MULTIPLIER, startHeading);//forward
             sleep(200);
             robot.spit();
             sleep(250);
@@ -183,7 +189,7 @@ public class BlueFar extends LinearOpMode {
         }
 
         if(tickMark == 3) {//-------------------------------------------------------Right Mark---------------------------------------
-
+            robot.odo(37.5, X_MULTIPLIER, 1, startHeading);//forward
             sleep(200);
             robot.pivotLeft(startHeading+45, 1);//right
             sleep(200);
@@ -197,7 +203,7 @@ public class BlueFar extends LinearOpMode {
 
         }
 
-        robot.odo(9, X_MULTIPLIER, 1, startHeading);//forward;
+        robot.odo(7, X_MULTIPLIER, 1, startHeading);//forward;
         sleep(200);
         robot.turnLeft(startHeading+90);
 
@@ -218,26 +224,38 @@ public class BlueFar extends LinearOpMode {
         intake.setPower(0);
         */
 
-        robot.odo(65, X_MULTIPLIER, 1, startHeading);//forward
+        robot.odo(63, X_MULTIPLIER, 1, startHeading);//forward
         sleep(200);
 
         if(tickMark == 1){
-            robot.strafe(20, Y_MULTIPLIER, -1, startHeading);
+            robot.strafe(24.5, Y_MULTIPLIER, -1, startHeading);
         }
 
         if(tickMark == 2){
-            robot.strafe(17, Y_MULTIPLIER, -1, startHeading);
+            robot.strafe(26, Y_MULTIPLIER, -1, startHeading);
+            sleep(200);
+
         }
 
         if(tickMark == 3){
-            robot.strafe(14, Y_MULTIPLIER, -1, startHeading);
+            robot.strafe(14.5, Y_MULTIPLIER, -1, startHeading);
         }
 
-        robot.odo(8.5, X_MULTIPLIER, 1, startHeading);
-        sleep(200);
 
         robot.distance(4.5, startHeading);
         sleep(200);
+        //color strafe
+        if(tickMark == 1){
+            //robot.strafe(26, Y_MULTIPLIER, -1, startHeading);
+        }
+
+        if(tickMark == 2){
+            robot.colorStrafe(2.5, Y_MULTIPLIER, 1, startHeading, (tagScanner.alpha() > 70));
+        }
+
+        if(tickMark == 3){
+            //robot.strafe(17, Y_MULTIPLIER, -1, startHeading);
+        }
 
         robot.slides(1100, 1);
         sleep(200);
@@ -248,8 +266,19 @@ public class BlueFar extends LinearOpMode {
         robot.homeSlides();
         sleep(200);
 
-        //robot.strafe(20, Y_MULTIPLIER, 1, startHeading);
-        //robot.odo(3, X_MULTIPLIER, 1, startHeading);
+        if(tickMark == 1){
+            robot.strafe(35, Y_MULTIPLIER, 1, startHeading);
+        }
+
+        if(tickMark == 2){
+            robot.strafe(24, Y_MULTIPLIER, 1, startHeading);
+        }
+
+        if(tickMark == 3){
+            robot.strafe(20, Y_MULTIPLIER, 1, startHeading);
+        }
+
+        robot.odo(3, X_MULTIPLIER, 1, startHeading);
 
     }
 }
