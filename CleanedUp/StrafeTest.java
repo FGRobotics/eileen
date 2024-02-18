@@ -177,9 +177,9 @@ public class StrafeTest extends LinearOpMode {
 
         waitForStart();
 
-        strafe(40, Y_MULTIPLIER, -1, startHeading);
-        sleep(1000);
-        strafe(40, X_MULTIPLIER, 1, startHeading);
+        strafe(60, Y_MULTIPLIER, 1, startHeading);
+        sleep(3000);
+        strafe(60, Y_MULTIPLIER, -1, startHeading);
         sleep(1000);
     }
 
@@ -208,10 +208,51 @@ public class StrafeTest extends LinearOpMode {
         double ticks = dist/tickstoinch;
         while (Math.abs(yAxis.getCurrentPosition()) < Math.abs(ticks)){
             double fix = imuPID(straightHeading);
-            rightFront.setPower(-reverse*(0.6 + fix));
-            leftFront.setPower(reverse*(0.6-fix));
-            leftRear.setPower(-reverse*(0.6  + fix));
-            rightRear.setPower(reverse*(0.6+fix));
+            if(reverse == 1){
+                if (fix > 0) { // if angle is greater than robot angle aka tilted right
+                    fix = Math.abs(fix);
+                    //if robot is pointed right of straight heading, then left side up force is greater than left side downforce
+                    //so we reduce the power to left front(up force) and increase power to left rear(down force)
+
+                    rightFront.setPower(-0.6); //Provides force to the right and down - reversed
+                    leftFront.setPower((0.6 - fix)); //Provides force to the right and up
+                    leftRear.setPower(-(0.6 + fix)); //Provides force to the right and down - reversed
+                    rightRear.setPower((0.6));   //provides force to the right and up
+
+                } else {//if angle is less than robot angle aka tilted left
+                    fix = Math.abs(fix);
+                    //if robot is titled left of straight heading, then left side downforce is greater than left side up force
+                    // so we reduce power to left rear(down force) and increase power to left front(up force)
+
+                    rightFront.setPower(-(0.6)); //Provides force to the right and down - reversed
+                    leftFront.setPower((0.6 + fix)); //Provides force to the right and up
+                    leftRear.setPower(-(0.6 - fix)); //Provides force to the right and down - reversed
+                    rightRear.setPower((0.6));   //provides force to the right and up
+                }
+            }else{
+                if (fix > 0) { // if angle is greater than robot angle aka tilted right
+                    fix = Math.abs(fix);
+                    //if robot is pointed right of straight heading, then left side up force is greater than left side downforce
+                    //so we reduce the power to left rear(up force) and increase power to left front(down force)
+
+                    rightFront.setPower(0.6); //Provides force to the left and up - reversed
+                    leftFront.setPower(-(0.6 + fix)); //Provides force to the left and down
+                    leftRear.setPower((0.6 - fix)); //Provides force to the left and up - reversed
+                    rightRear.setPower(-(0.6));   //provides force to the left and down
+
+                } else {//if angle is less than robot angle aka tilted left
+                    fix = Math.abs(fix);
+                    //if robot is titled left of straight heading, then left side downforce is greater than left side up force
+                    // so we reduce power to left front(down force) and increase power to left rear(up force)
+
+                    rightFront.setPower(0.6); //Provides force to the left and up - reversed
+                    leftFront.setPower(-(0.6 - fix)); //Provides force to the left and down
+                    leftRear.setPower((0.6 + fix)); //Provides force to the left and up - reversed
+                    rightRear.setPower(-(0.6));   //provides force to the left and down
+                }
+            }
+
+
 
             telemetry.addData("angle: ",  imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle );
             telemetry.update();
@@ -264,10 +305,45 @@ public class StrafeTest extends LinearOpMode {
     }
 
     public double imuPID(double angle){
+
+        //how much the robot can tilt without resetting
+        double tilt_room_left = 360 - angle;
+        double tilt_room_right = 0-angle;
+        boolean tooLeft = false;
+        boolean tooRight = false;
+        //normalization
         double rangle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
         rangle = (rangle < 0.0) ? 360 + rangle : rangle;
-        double error = (rangle > angle) ? rangle - angle : angle - rangle;
+
+        //error scaling
+        //if tilted left = negative
+        //if tilted right = positive
+        double error = angle-rangle;
+
+        //the robot will never drift more than 90 degrees tilted direction, so if error is bigger than this, we know robot
+        //is too far left, it just hit the reset point and went back down to the zero range
+        //so instead of returning a negative fix, it will return a positive one
+        if(error > tilt_room_left){
+            tooLeft = true;
+        }
+        //too far right that it will return negative instead of positive
+        if(error < tilt_room_right){
+            tooRight = true;
+        }
+        //if this is true make negative
+        if(tooLeft){
+            rangle += 360;
+            error = angle - rangle;
+        }
+
+        //if this is true make positive
+        if(tooRight){
+            double actual_error = Math.abs(rangle - 360) + angle;
+
+        }
         error = error/180;
+
+
 
         return (error*kPtheta)/10;
 
