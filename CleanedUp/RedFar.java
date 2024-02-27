@@ -52,8 +52,8 @@ public class RedFar extends LinearOpMode {
 
     DcMotor rightFront,leftFront,rightRear,leftRear, xAxis,yAxis,transfer, lslides ;
     CRServo outtake, intake;
-    Servo intakeAngle;
-    ColorSensor tagScanner;
+    Servo intakeAngle, arm;
+    ColorSensor tagScanner, ground;
     DistanceSensor frontDist;
     private BNO055IMU imu;
 
@@ -87,7 +87,8 @@ public class RedFar extends LinearOpMode {
 
         frontDist = hardwareMap.get(DistanceSensor.class, "frontDist");
         tagScanner = hardwareMap.get(ColorSensor.class, "color");
-
+        ground = hardwareMap.get(ColorSensor.class, "ground");
+        arm = hardwareMap.get(Servo.class, "arm");
 
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
 
@@ -110,7 +111,7 @@ public class RedFar extends LinearOpMode {
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
 
         Eileen robot = new Eileen(rightFront, leftFront, rightRear, leftRear, xAxis, yAxis, transfer, lslides, outtake,
-                tagScanner, frontDist, imu);
+                tagScanner, frontDist, imu, ground);
         //OpenCV Pipeline
 
         ContourPipelineRedFar myPipeline = new ContourPipelineRedFar();
@@ -153,90 +154,155 @@ public class RedFar extends LinearOpMode {
 
 
 
-
+        arm.setPosition(0.5);
 
         waitForStart();
-        sleep(10000);
-        if(tickMark == 1) { //--------------------------------------------------------------Left mark--------------------
-            robot.odo(37.5, X_MULTIPLIER, 1, startHeading);//forward
+
+        sleep(200);
+        if(tickMark == 3) { //--------------------------------------------------------------right mark--------------------
+            robot.odo(31.5, X_MULTIPLIER, 1, startHeading);//forward
 
 
             sleep(200);
-            robot.pivotRight(startHeading-20, 1);
+            robot.pivotLeft(startHeading+85, 1);
+            sleep(200);
+            robot.colorOdoRed(1000,0,startHeading+85, 1);
+            sleep(200);
+            robot.colorOdoRed(5000,1000,startHeading+85, 1);
 
             sleep(200);
             robot.spit();//drop
             sleep(200);
 
-            robot.pivotRight(startHeading, -1);
+            robot.pivotLeft(startHeading, -1);
+            robot.strafe(2, Y_MULTIPLIER, 1, startHeading);
 
-            robot.odo(1, X_MULTIPLIER, 1, startHeading);//forward
+            robot.colorOdoRed(1300,0,startHeading, 1);
             sleep(200);
+            robot.colorOdoRed(5000,1300,startHeading, 1);
+            sleep(200);
+
+            robot.odo(1.5, X_MULTIPLIER, 1, startHeading);//forward
+
+
 
         }
 
         if(tickMark == 2) {//------------------------------------------------------Middle Mark----------------------------------------------
-            robot.odo(28, X_MULTIPLIER, 1, startHeading);//forward
+            robot.odo(29.5, X_MULTIPLIER, 1, startHeading);//forward
             sleep(200);
-            robot.odo(11, X_MULTIPLIER, startHeading);//forward
+            robot.colorOdoRed(1000,0,startHeading, 1);
             sleep(200);
-            robot.odo(1, X_MULTIPLIER, startHeading);//forward
+            robot.colorOdoRed(5000,1400,startHeading, 1);
             sleep(200);
             robot.spit();
             sleep(250);
 
         }
 
-        if(tickMark == 3) {//-------------------------------------------------------Right Mark---------------------------------------
-            robot.odo(31.5, X_MULTIPLIER, 1, startHeading);//forward
+        if(tickMark == 1) {//-------------------------------------------------------left Mark---------------------------------------
+            ElapsedTime timer = new ElapsedTime();
+            robot.odo(32.5, X_MULTIPLIER, 1, startHeading);//forward
             sleep(200);
-            robot.pivotLeft(startHeading+75, 1);//right
+            robot.stripStrafe(20, Y_MULTIPLIER, -1, startHeading, 1400);
             sleep(200);
             robot.spit();//drop
             sleep(200);
 
-            robot.pivotLeft(startHeading, -1);
+
+
+            robot.odo(4, X_MULTIPLIER, 1, startHeading);//forward;
+            sleep(8000);
+            robot.turnRight(startHeading-90);
+
+            startHeading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;//reset straight angle
+            startHeading = (startHeading < 0) ? 360 + startHeading : startHeading;//reset straight angle
+
+            robot.odo(76, X_MULTIPLIER, 1, startHeading);//forward
             sleep(200);
+            robot.strafe(14.5, Y_MULTIPLIER, 1, startHeading);
+            sleep(200);
+            robot.distance(4.5, startHeading);
+            sleep(200);
+            robot.slides(1100, 1);
+            sleep(200);
+            robot.drop();
+
+            sleep(300);
+
+            robot.homeSlides();
+            sleep(200);
+
+
+            while(timer.seconds()<30){
+
+            }
 
 
         }
 
-        robot.odo(5, X_MULTIPLIER, 1, startHeading);//forward;
+        robot.odo(2, X_MULTIPLIER, 1, startHeading);//forward;
         sleep(200);
         robot.turnRight(startHeading-90);
 
         startHeading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;//reset straight angle
         startHeading = (startHeading < 0) ? 360 + startHeading : startHeading;//reset straight angle
-        /*
-        intakeAngle.setPosition(.94);
-        robot.odo(15,X_MULTIPLIER,-1,startHeading);
-        sleep(700);
-        intakeAngle.setPosition(1);
-        robot.odo(4,X_MULTIPLIER,1,startHeading);
-        transfer.setPower(1);
-        intake.setPower(1);
-        robot.odo(6, X_MULTIPLIER, -1, startHeading);
-        sleep(1000);
-        robot.odo(6, X_MULTIPLIER, 1, startHeading);
-        transfer.setPower(0);
-        intake.setPower(0);
-        */
 
-        robot.odo(63, X_MULTIPLIER, 1, startHeading);//forward
+        intakeAngle.setPosition(.7);
+        robot.strafe(3, Y_MULTIPLIER, -1, startHeading);// line up
+        sleep(200);
+        intake.setPower(1);
+        robot.odo(15,X_MULTIPLIER,-0.75,startHeading);// go back
         sleep(200);
 
-        if(tickMark == 1){
-            robot.strafe(19.5, Y_MULTIPLIER, 1, startHeading);
-        }
+        //robot.colorOdoRed(1000,0, startHeading, -1);//line up
+        robot.stripStrafe(8, Y_MULTIPLIER, 1, startHeading, 1000);
+        intakeAngle.setPosition(.9);//drop
+        sleep(800);
+        new Thread(()->{
+            ElapsedTime timer = new ElapsedTime();
+            timer.reset();
+            while(timer.seconds()<.2){
+                continue;
+            }
+            intakeAngle.setPosition(1);
+        }).start();
+        robot.odo(4, X_MULTIPLIER, 0.7, startHeading);
+
+        robot.odo(1.5, X_MULTIPLIER, -0.8, startHeading);
+        sleep(2000);
+        robot.strafe(2, Y_MULTIPLIER, -1, startHeading);// line up
+        transfer.setPower(0);
+        intake.setPower(0);
+
+        new Thread(()->{
+            ElapsedTime timer = new ElapsedTime();
+            timer.reset();
+            while(timer.seconds()<.2){
+                continue;
+            }
+            transfer.setPower(1);
+        }).start();
+        new Thread(()->{
+            ElapsedTime timer = new ElapsedTime();
+            timer.reset();
+            while(timer.seconds()<2){
+                continue;
+            }
+            transfer.setPower(0);
+        }).start();
+        robot.odo(79, X_MULTIPLIER, 1.5, startHeading);//forward
+        sleep(200);
+
 
         if(tickMark == 2){
-            robot.strafe(24.5, Y_MULTIPLIER, 1, startHeading);
+            robot.strafe(20, Y_MULTIPLIER, 1, startHeading);
             sleep(200);
 
         }
 
         if(tickMark == 3){
-            robot.strafe(26.5, Y_MULTIPLIER, 1, startHeading);
+            robot.strafe(29, Y_MULTIPLIER, 1, startHeading);
         }
 
 
@@ -252,20 +318,28 @@ public class RedFar extends LinearOpMode {
 
         robot.homeSlides();
         sleep(200);
-
+        /*
         if(tickMark == 1){
-            robot.strafe(26, Y_MULTIPLIER, 1, startHeading);
+            robot.strafe(35, Y_MULTIPLIER, 1, startHeading);
+            robot.spit();
         }
 
         if(tickMark == 2){
-            robot.strafe(23, Y_MULTIPLIER, 1, startHeading);
+            robot.strafe(22, Y_MULTIPLIER, 1, startHeading);
+            robot.spit();
         }
 
         if(tickMark == 3){
             robot.strafe(20, Y_MULTIPLIER, 1, startHeading);
+            robot.spit();
         }
 
         robot.odo(3, X_MULTIPLIER, 1, startHeading);
-
+        */
+        robot.turnRight(startHeading-90);
+        intakeAngle.setPosition(.8);
+        robot.spit();
+        sleep(200);
+        robot.odo(3, X_MULTIPLIER, 1,startHeading-90);
     }
 }
