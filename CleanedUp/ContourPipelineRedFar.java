@@ -77,7 +77,7 @@ public class ContourPipelineRedFar extends OpenCvPipeline {
                     for (int i = (int) topLeft.x; i < (int) bottomRight.x; i++) {
                         for (int j = (int) topLeft.y; j < (int) bottomRight.y; j++) {
 
-                            if (end.get(j, i)[2] > 165) {
+                            if (end.get(j, i)[2] > 120) {
                                 accumulator++;
                             }
                         }
@@ -121,4 +121,3 @@ public class ContourPipelineRedFar extends OpenCvPipeline {
 
 
 }
-
