@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -49,6 +50,7 @@ public class BlueNear extends LinearOpMode {
     ColorSensor tagScanner, ground;
     private double startHeading = 0;
     DcMotor rightFront,leftFront,rightRear,leftRear, xAxis,yAxis,transfer, lslides ;
+    Servo arm;
     CRServo outtake;
     DistanceSensor frontDist;
     private BNO055IMU imu;
@@ -71,7 +73,7 @@ public class BlueNear extends LinearOpMode {
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         transfer = hardwareMap.get(DcMotor.class, "transfer");
-
+        arm = hardwareMap.get(Servo.class, "arm");
         outtake = hardwareMap.get(CRServo.class, "outtake");
 
         tagScanner = hardwareMap.get(ColorSensor.class, "color");
@@ -160,9 +162,9 @@ public class BlueNear extends LinearOpMode {
             sleep(200);
 
 
-            robot.colorOdoBlue(1000,0, startHeading+90);
+            robot.colorOdoBlue(1400,0, startHeading+90);
             sleep(200);
-            robot.colorOdoBlue(5000,1000, startHeading+90);
+            robot.colorOdoBlue(5000,1400, startHeading+90);
             sleep(200);
 
             robot.spit();//drop
@@ -202,9 +204,9 @@ public class BlueNear extends LinearOpMode {
             robot.turnRight(startHeading-180);//flip 180
             sleep(200);
 
-            robot.colorOdoBlue(1000,0, startHeading-180);
+            robot.colorOdoBlue(1400,0, startHeading-180);
             sleep(200);
-            robot.colorOdoBlue(5000,1000, startHeading-180);
+            robot.colorOdoBlue(5000,1400, startHeading-180);
             sleep(200);
 
 
@@ -253,9 +255,9 @@ public class BlueNear extends LinearOpMode {
 
             robot.odo(15, X_MULTIPLIER, 1, startHeading+90);//forward
             sleep(200);
-            robot.colorOdoBlue(1000,0, startHeading+90);
+            robot.colorOdoBlue(1400,0, startHeading+90);
             sleep(200);
-            robot.colorOdoBlue(5000,1000, startHeading+90);
+            robot.colorOdoBlue(5000,1400, startHeading+90);
             sleep(200);
 
             robot.spit();//drop
