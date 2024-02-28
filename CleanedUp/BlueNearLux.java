@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.graphics.Color;
+
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -9,6 +11,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -21,9 +24,9 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-@Autonomous(name = "RedNear")
+@Autonomous(name = "BlueNear")
 
-public class RedNear extends LinearOpMode {
+public class BlueNearLux extends LinearOpMode {
     public static final double TICKS_PER_REV = 384.5;
     public static final double MAX_RPM = 435;
     public static double WHEEL_RADIUS = 2; // in
@@ -44,11 +47,11 @@ public class RedNear extends LinearOpMode {
     private int kPtheta = 16;
 
     private int tickMark = 2;
-
+    ColorSensor tagScanner, ground;
     private double startHeading = 0;
     DcMotor rightFront,leftFront,rightRear,leftRear, xAxis,yAxis,transfer, lslides ;
+    Servo arm;
     CRServo outtake;
-    ColorSensor tagScanner, ground;
     DistanceSensor frontDist;
     private BNO055IMU imu;
 
@@ -70,16 +73,16 @@ public class RedNear extends LinearOpMode {
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         transfer = hardwareMap.get(DcMotor.class, "transfer");
-
+        arm = hardwareMap.get(Servo.class, "arm");
         outtake = hardwareMap.get(CRServo.class, "outtake");
 
         tagScanner = hardwareMap.get(ColorSensor.class, "color");
-        frontDist = hardwareMap.get(DistanceSensor.class, "frontDist");
         ground = hardwareMap.get(ColorSensor.class, "ground");
 
         lslides = hardwareMap.get(DcMotor.class, "slides");
         lslides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lslides.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontDist = hardwareMap.get(DistanceSensor.class, "frontDist");
 
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
 
@@ -98,15 +101,14 @@ public class RedNear extends LinearOpMode {
         yAxis.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         OpenCvWebcam webcam;
 
-        Eileen robot = new Eileen(rightFront, leftFront, rightRear, leftRear, xAxis, yAxis, transfer, lslides, outtake,
-                tagScanner, frontDist, imu, ground);
-
-
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
         //OpenCV Pipeline
 
-        ContourPipelineRedClose myPipeline = new ContourPipelineRedClose();
+        Eileen robot = new Eileen(rightFront, leftFront, rightRear, leftRear, xAxis, yAxis, transfer, lslides, outtake,
+                tagScanner, frontDist, imu, ground);
+
+        ContourPipelineBlueClose myPipeline = new ContourPipelineBlueClose();
         webcam.setPipeline(myPipeline);
 
         OpenCvWebcam finalWebcam = webcam;
@@ -146,132 +148,151 @@ public class RedNear extends LinearOpMode {
         }
 
         waitForStart();
-        new Thread(()->{
-            telemetry.addData("dist: ", frontDist.getDistance(DistanceUnit.INCH));
-            telemetry.update();
-        });
+
 
 
         //branch out to drop on left
-        if (tickMark == 1) {
+
+        if (tickMark == 3) {
             robot.odo(32, X_MULTIPLIER, 1, startHeading);//forward
-            robot.pivotRight(startHeading - 90, 1);//pivot right
+            sleep(200);
 
 
+            robot.pivotLeft(startHeading + 90, 1);//pivot right
             sleep(200);
-            robot.colorOdoRed(1200,0, startHeading-90,1);
+
+
+            robot.colorOdoBlue(1400,0, startHeading+90);
             sleep(200);
-            robot.colorOdoRed(5000,1200, startHeading-90,1);
+            robot.colorOdoBlue(5000,1400, startHeading+90);
+            sleep(200);
 
             robot.spit();//drop
-
-
-            //SLEEP FOR LUXONS HERE
-            robot.odo(22, X_MULTIPLIER, 1, startHeading-90);//forward
             sleep(200);
-            //CREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEP FORWARD
-            robot.distance(4.5, startHeading-90);
 
-            //robot.colorStrafe(3.25,Y_MULTIPLIER,-1,startHeading-90, (tagScanner.argb() < 1000000000));
-            robot.strafe(4, Y_MULTIPLIER, -1, startHeading-90);
 
-            //CREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEP FORWARD
-            robot.distance(4.5, startHeading-90);
+            sleep(3000);
+            robot.odo(26.5, X_MULTIPLIER, 1, startHeading+90);//forward
+            sleep(200);
+            //-------------------------------------------------------Creep Up
+
+            robot.distance(4.5, startHeading+90);
+            sleep(200);
+            //---------------------------------------------------------COLOR Strafe
+            robot.colorStrafe(2,Y_MULTIPLIER,1,startHeading+90,tagScanner.alpha() > 200);
+            sleep(200);
 
             robot.slides(1100,1);
-
             sleep(200);
             robot.drop();
-            sleep(200);
+            sleep(500);
             robot.homeSlides();
+            sleep(200);
 
-            robot.strafe(26,Y_MULTIPLIER,1,startHeading-90);
-            robot.odo(4, X_MULTIPLIER, 1, startHeading-90);//forward
-
+            robot.strafe(23,Y_MULTIPLIER,-1,startHeading+90);
+            sleep(200);
+            robot.odo(4, X_MULTIPLIER, 1, startHeading+90);//forward
         }
 
 
 
         //branch out to drop on middle
         if (tickMark == 2) {
-            robot.odo(28, X_MULTIPLIER, 1, startHeading);//forward
-            robot.turnLeft(startHeading-180);//flip 180
+            robot.odo(25, X_MULTIPLIER, 1, startHeading);//forward
+            sleep(200);
 
+            robot.turnRight(startHeading-180);//flip 180
             sleep(200);
-            robot.colorOdoRed(1000,0, startHeading-180,1);
+
+            robot.colorOdoBlue(1400,0, startHeading-180);
             sleep(200);
-            robot.colorOdoRed(5000,1000, startHeading-180,1);
+            robot.colorOdoBlue(5000,1400, startHeading-180);
+            sleep(200);
+
 
             robot.spit();//drop
-
-            robot.odo(2, X_MULTIPLIER, 1, startHeading-180);//forward
-
-            robot.turnLeft(startHeading-90);//face the board
-
-            //SLEEP FOR LUXONS HERE
-            robot.odo(18, X_MULTIPLIER, 1, startHeading - 90);//forward
             sleep(200);
-            robot.strafe(0.25,Y_MULTIPLIER,-1,startHeading-90);
-            //CREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEP FORWARD
-            robot.distance(4.5, startHeading-90);
+
+            robot.odo(4.5, X_MULTIPLIER, 1, startHeading-180);//forward
+            sleep(200);
+
+            robot.turnRight(startHeading+90);//face the board
+            sleep(200);
+            sleep(3000);
+
+            robot.odo(16, X_MULTIPLIER, 1, startHeading + 90);//forward
+            sleep(200);
+
+            robot.colorStrafe(2.5,Y_MULTIPLIER,1,startHeading+90, (tagScanner.alpha() > 200));
+            sleep(200);
+            //-------------------------------------------------------Creep Up-------------------------------------
+            robot.distance(4.5, startHeading+90);
+            sleep(200);
+
 
             robot.slides(1100,1);
-
             sleep(200);
+
             robot.drop();
-            sleep(200);
+            sleep(500);
             robot.homeSlides();
+            sleep(200);
 
-            robot.strafe(22,Y_MULTIPLIER,1,startHeading-90);
-            robot.odo(4, X_MULTIPLIER, 1, startHeading-90);//forward
+            robot.strafe(18,Y_MULTIPLIER,-1,startHeading+90);
+            sleep(200);
+            robot.odo(4, X_MULTIPLIER, 1, startHeading+90);//forward
 
         }
 
 
-        if (tickMark == 3) {
+        if (tickMark == 1) {
             robot.odo(32, X_MULTIPLIER, 1, startHeading);//forward
-
-
-            robot.pivotRight(startHeading - 90, 1);//pivot right
-
-
-
-            robot.odo(15, X_MULTIPLIER, 1, startHeading-90);//forward
-            //SLEEP FOR LUXONS HERE
             sleep(200);
-            robot.colorOdoRed(1200,0, startHeading-90,1);
+
+            robot.pivotLeft(startHeading + 90,1);//pivot right
             sleep(200);
-            robot.colorOdoRed(5000,1200, startHeading-90,1);
+
+
+            robot.odo(15, X_MULTIPLIER, 1, startHeading+90);//forward
+            sleep(3000);
+            sleep(200);
+            robot.colorOdoBlue(1400,0, startHeading+90);
+            sleep(200);
+            robot.colorOdoBlue(5000,1400, startHeading+90);
+            sleep(200);
 
             robot.spit();//drop
+            sleep(200);
 
 
 
-            robot.odo(5, X_MULTIPLIER, 1, startHeading-90);//forward
-            //CREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEP FORWARD
-            robot.distance(4.5, startHeading-90);
-
-            robot.colorStrafe(6.5,Y_MULTIPLIER,1,startHeading-90, (tagScanner.alpha() >200));
-
-            //CREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEP FORWARD
-            robot.distance(4.5, startHeading-90);
+            robot.odo(13, X_MULTIPLIER, 1, startHeading+90);//forward
+            sleep(200);
+            //-------------------------------------------------------Creep Up
+            robot.distance(4.5, startHeading+90);
+            sleep(200);
+            //----------------------------------------------------TAG SCAN???
+            robot.colorStrafe(7,Y_MULTIPLIER,-1,startHeading+90, tagScanner.argb() < 180000000 );
+            sleep(200);
 
             robot.slides(1100,1);
             sleep(200);
-            robot.drop();
-            sleep(200);
-            robot.homeSlides();
 
-            robot.strafe(18,Y_MULTIPLIER,1,startHeading-90);
-            robot.odo(4, X_MULTIPLIER, 1, startHeading-90);//forward
+
+            robot.drop();
+            sleep(500);
+            robot.homeSlides();
+            sleep(200);
+
+            robot.strafe(15,Y_MULTIPLIER,-1,startHeading+90);
+            sleep(200);
+            robot.odo(4, X_MULTIPLIER, 1, startHeading+90);//forward
 
         }
-
 
 
 
     }
-
 
 
 }

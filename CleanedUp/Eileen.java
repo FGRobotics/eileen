@@ -69,9 +69,9 @@ public class Eileen {
     public void odo(double dist, double tickstoinch, double reverse, double straightHeading){
         double ticks = Math.abs(dist/tickstoinch);
         while (Math.abs(xAxis.getCurrentPosition()) < ticks){
-            double fix = odoPID(straightHeading); //negative if left, positive if right
+            double fix = strafePID(straightHeading); //negative if left, positive if right
             if(reverse < 0){
-                    fix = -odoPID(straightHeading);
+                    fix = -strafePID(straightHeading);
 
             }
             double position = Math.abs(xAxis.getCurrentPosition());
@@ -96,8 +96,8 @@ public class Eileen {
     public void distance(double lowest, double straightHeading){
         ElapsedTime timer = new ElapsedTime();
         timer.reset();
-        while (frontDist.getDistance(DistanceUnit.INCH) > 6 && timer.seconds() < 3){
-            double fix = odoPID(straightHeading);
+        while (frontDist.getDistance(DistanceUnit.INCH) > 5.9 && timer.seconds() < 3){
+            double fix = strafePID(straightHeading);
 
 
 
@@ -452,7 +452,7 @@ public class Eileen {
 
         //if this is true make positive
         if(tooRight){
-            double actual_error = Math.abs(rangle - 360) + angle;
+            error = Math.abs(rangle - 360) + angle;
 
         }
         error = error/180;
@@ -482,7 +482,7 @@ public class Eileen {
     public void slides(int target, int reverse){
         ElapsedTime timer = new ElapsedTime();
         timer.reset();
-        while(reverse*lslides.getCurrentPosition() < Math.abs(1350) &&timer.seconds() < 3){
+        while(reverse*lslides.getCurrentPosition() < Math.abs(1330) &&timer.seconds() < 3){
 
             lslides.setPower(reverse*0.7);
         }
@@ -491,7 +491,7 @@ public class Eileen {
     }
     public void drop(){
         outtake.setPower(-0.5);
-        sleep(2.5);
+        sleep(1.8);
         outtake.setPower(0);
     }
     public  void pivotRight(double angle, int direction){
@@ -562,7 +562,7 @@ public class Eileen {
     public void colorOdoBlue(int upperBound,int lowerBound, double straightHeading){
 
         while (ground.blue() > lowerBound && ground.blue() < upperBound ){
-            double fix = odoPID(straightHeading);
+            double fix = strafePID(straightHeading);
 
             rightFront.setPower((0.2+ fix));
             leftFront.setPower((0.25 - fix));
@@ -581,7 +581,7 @@ public class Eileen {
     public void colorOdoRed(int upperBound,int lowerBound, double straightHeading, int reverse){
 
         while (ground.red() > lowerBound && ground.red() < upperBound ){
-            double fix = odoPID(straightHeading);
+            double fix = strafePID(straightHeading);
             if(reverse == -1){
                 fix = -odoPID(straightHeading);
 

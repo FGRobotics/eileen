@@ -21,9 +21,9 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-@Autonomous(name = "RedNear")
+@Autonomous(name = "RedNearLux")
 
-public class RedNear extends LinearOpMode {
+public class RedNearLux extends LinearOpMode {
     public static final double TICKS_PER_REV = 384.5;
     public static final double MAX_RPM = 435;
     public static double WHEEL_RADIUS = 2; // in
@@ -167,6 +167,7 @@ public class RedNear extends LinearOpMode {
 
 
             //SLEEP FOR LUXONS HERE
+            sleep(3000);
             robot.odo(22, X_MULTIPLIER, 1, startHeading-90);//forward
             sleep(200);
             //CREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEP FORWARD
@@ -209,6 +210,8 @@ public class RedNear extends LinearOpMode {
             robot.turnLeft(startHeading-90);//face the board
 
             //SLEEP FOR LUXONS HERE
+            sleep(3000);
+
             robot.odo(18, X_MULTIPLIER, 1, startHeading - 90);//forward
             sleep(200);
             robot.strafe(0.25,Y_MULTIPLIER,-1,startHeading-90);
@@ -238,6 +241,7 @@ public class RedNear extends LinearOpMode {
 
             robot.odo(15, X_MULTIPLIER, 1, startHeading-90);//forward
             //SLEEP FOR LUXONS HERE
+            sleep(3000);
             sleep(200);
             robot.colorOdoRed(1200,0, startHeading-90,1);
             sleep(200);

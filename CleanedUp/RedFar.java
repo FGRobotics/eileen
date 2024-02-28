@@ -189,11 +189,15 @@ public class RedFar extends LinearOpMode {
         }
 
         if(tickMark == 2) {//------------------------------------------------------Middle Mark----------------------------------------------
-            robot.odo(29.5, X_MULTIPLIER, 1, startHeading);//forward
+            robot.strafe(6, Y_MULTIPLIER, -1, startHeading);
+            robot.odo(32.5, X_MULTIPLIER, 1, startHeading);//forward
+            robot.strafe(6, Y_MULTIPLIER, 1, startHeading);
             sleep(200);
             robot.colorOdoRed(1000,0,startHeading, 1);
             sleep(200);
             robot.colorOdoRed(5000,1400,startHeading, 1);
+            sleep(200);
+            robot.odo(1.5,X_MULTIPLIER,0.65,startHeading);
             sleep(200);
             robot.spit();
             sleep(250);
@@ -249,14 +253,14 @@ public class RedFar extends LinearOpMode {
         startHeading = (startHeading < 0) ? 360 + startHeading : startHeading;//reset straight angle
 
         intakeAngle.setPosition(.7);
-        robot.strafe(3, Y_MULTIPLIER, -1, startHeading);// line up
+        robot.strafe(1.5, Y_MULTIPLIER, -1, startHeading);// line up
         sleep(200);
         intake.setPower(1);
-        robot.odo(15,X_MULTIPLIER,-0.75,startHeading);// go back
+        robot.odo(16,X_MULTIPLIER,-0.75,startHeading);// go back
         sleep(200);
 
         //robot.colorOdoRed(1000,0, startHeading, -1);//line up
-        robot.stripStrafe(8, Y_MULTIPLIER, 1, startHeading, 1000);
+        robot.stripStrafe(8, Y_MULTIPLIER, 1, startHeading, 1200);
         intakeAngle.setPosition(.9);//drop
         sleep(800);
         new Thread(()->{
@@ -271,7 +275,7 @@ public class RedFar extends LinearOpMode {
 
         robot.odo(1.5, X_MULTIPLIER, -0.8, startHeading);
         sleep(2000);
-        robot.strafe(2, Y_MULTIPLIER, -1, startHeading);// line up
+        robot.strafe(1, Y_MULTIPLIER, -1, startHeading);// line up
         transfer.setPower(0);
         intake.setPower(0);
 
@@ -296,7 +300,7 @@ public class RedFar extends LinearOpMode {
 
 
         if(tickMark == 2){
-            robot.strafe(20, Y_MULTIPLIER, 1, startHeading);
+            robot.strafe(21, Y_MULTIPLIER, 1, startHeading);
             sleep(200);
 
         }
