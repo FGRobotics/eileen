@@ -161,36 +161,29 @@ public class BlueFar extends LinearOpMode {
 
         sleep(200);
         if(tickMark == 1) { //--------------------------------------------------------------Left mark--------------------
-            robot.odo(34.5, X_MULTIPLIER, 1, startHeading);//forward
+            robot.odo(31.5, X_MULTIPLIER, 1, startHeading);//forward
 
 
             sleep(200);
-            robot.pivotRight(startHeading-60, 1);
+            robot.pivotRight(startHeading-70, 1);
             sleep(200);
-            robot.colorOdoBlue(1000,0,startHeading-60);
+            robot.colorOdo(1000,0,startHeading-70);
 
             sleep(200);
             robot.spit();//drop
             sleep(200);
 
             robot.pivotRight(startHeading, -1);
-
-            robot.colorOdoBlue(1400,0,startHeading);
-            sleep(200);
-            robot.colorOdoBlue(5000,1400,startHeading);
-            sleep(200);
-            robot.odo(1.5, X_MULTIPLIER, 1, startHeading);//forward
-
+            robot.strafe(6, Y_MULTIPLIER, -1, startHeading);
+            robot.odo(2.5, X_MULTIPLIER, 0.5, startHeading);//forward
 
 
         }
 
         if(tickMark == 2) {//------------------------------------------------------Middle Mark----------------------------------------------
-            robot.odo(29.5, X_MULTIPLIER, 1, startHeading);//forward
+            robot.odo(27.5, X_MULTIPLIER, 1, startHeading);//forward
             sleep(200);
-            robot.colorOdoBlue(1400,0,startHeading);
-            sleep(200);
-            robot.colorOdoBlue(5000,1400,startHeading);
+            robot.colorOdo(1400,0,startHeading);
             sleep(200);
             robot.spit();
             sleep(250);
@@ -199,16 +192,16 @@ public class BlueFar extends LinearOpMode {
 
         if(tickMark == 3) {//-------------------------------------------------------Right Mark---------------------------------------
             ElapsedTime timer = new ElapsedTime();
-            robot.odo(32.5, X_MULTIPLIER, 1, startHeading);//forward
+            robot.odo(26.5, X_MULTIPLIER, 1, startHeading);//forward
             sleep(200);
-            robot.stripStrafeBlue(20, Y_MULTIPLIER, 1, startHeading, 1400);
+            robot.stripStrafe(9, Y_MULTIPLIER, 1, startHeading, 1400);
             sleep(200);
             robot.spit();//drop
             sleep(200);
 
 
 
-            robot.odo(6, X_MULTIPLIER, 1, startHeading);//forward;
+            robot.odo(8, X_MULTIPLIER, 1, startHeading);//forward;
             sleep(8000);
             robot.turnLeft(startHeading+90);
 
@@ -221,13 +214,13 @@ public class BlueFar extends LinearOpMode {
             sleep(200);
             robot.distance(4.5, startHeading);
             sleep(200);
-            robot.slides(1100, 1);
+            //robot.slidesOut();
             sleep(200);
-            robot.drop();
+            //robot.drop();
 
             sleep(300);
 
-            robot.homeSlides();
+            //robot.homeSlides();
             sleep(200);
 
             robot.strafe(15, Y_MULTIPLIER, 1, startHeading);
@@ -246,7 +239,7 @@ public class BlueFar extends LinearOpMode {
         startHeading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;//reset straight angle
         startHeading = (startHeading < 0) ? 360 + startHeading : startHeading;//reset straight angle
 
-        intakeAngle.setPosition(.7);
+        intakeAngle.setPosition(.3);
         robot.strafe(3, Y_MULTIPLIER, 1, startHeading);// line up
         sleep(200);
         intake.setPower(1);
@@ -255,28 +248,21 @@ public class BlueFar extends LinearOpMode {
 
         //robot.colorOdoRed(1000,0, startHeading, -1);//line up
         robot.stripStrafe(6, Y_MULTIPLIER, -1, startHeading, 1000);
-        intakeAngle.setPosition(1);//drop
+        intakeAngle.setPosition(.45);//drop
         sleep(400);
         robot.odo(4, X_MULTIPLIER, 0.7, startHeading);
         sleep(400);
         robot.odo(1.5, X_MULTIPLIER, -0.8, startHeading);
         sleep(1000);
         robot.strafe(2, Y_MULTIPLIER, 1, startHeading);// line up
-        transfer.setPower(0);
+        transfer.setPower(1);
         intake.setPower(0);
 
-        new Thread(()->{
-           ElapsedTime timer = new ElapsedTime();
-           timer.reset();
-           while(timer.seconds()<.2){
-               continue;
-           }
-           transfer.setPower(1);
-        }).start();
+
         new Thread(()->{
             ElapsedTime timer = new ElapsedTime();
             timer.reset();
-            while(timer.seconds()<2){
+            while(timer.seconds()<3){
                 continue;
             }
             transfer.setPower(0);
@@ -316,13 +302,13 @@ public class BlueFar extends LinearOpMode {
             //robot.strafe(17, Y_MULTIPLIER, -1, startHeading);
         }
 
-        robot.slides(1100, 1);
+        //robot.slidesOut();
         sleep(200);
-        robot.drop();
+        //robot.drop();
 
         sleep(300);
 
-        robot.homeSlides();
+        //robot.homeSlides();
         sleep(200);
         /*
         if(tickMark == 1){
@@ -343,7 +329,7 @@ public class BlueFar extends LinearOpMode {
         robot.odo(3, X_MULTIPLIER, 1, startHeading);
         */
         robot.turnRight(startHeading-90);
-        intakeAngle.setPosition(.8);
+        intakeAngle.setPosition(0);
         robot.spit();
         sleep(200);
         robot.odo(3, X_MULTIPLIER, 1,startHeading-90);

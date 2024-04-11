@@ -37,8 +37,8 @@ public class Teleop extends LinearOpMode{
     Acceleration gravity;
     DcMotor rightFront,leftFront,rightRear,leftRear,lslides,transfer, leds, xAxis, yAxis ;
 
-    Servo intakeAngle, airplane, arm;
-    CRServo intake, outtake;
+    Servo intakeAngle, airplane, arm, outtake;
+    CRServo intake;
     DistanceSensor frontDist;
     double intakeAngPoses[] = {0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0};
     int intakeAng = 0;
@@ -72,7 +72,7 @@ public class Teleop extends LinearOpMode{
         ground = hardwareMap.get(ColorSensor.class, "ground");
 
         airplane = hardwareMap.get(Servo.class, "airplane");
-        outtake = hardwareMap.get(CRServo.class, "outtake");
+        outtake = hardwareMap.get(Servo.class, "outtake");
         intakeAngle = hardwareMap.get(Servo.class, "intakeAngle");
         intake = hardwareMap.get(CRServo.class, "intake");
         arm = hardwareMap.get(Servo.class, "arm");
@@ -94,7 +94,15 @@ public class Teleop extends LinearOpMode{
         intakeAngle.setPosition(intakeAngPoses[intakeAng]);
 
         while (opModeIsActive()) {
+            /*
+            if(gamepad1.dpad_up || gamepad1.dpad_down || gamepad1.dpad_left || gamepad1.dpad_left){
+                imuHelp();
+            }else{
+                robotCentricPlus();
+            }
+             */
             robotCentricPlus();
+
             gp1();
             gp2();
             telemetry.addData("Slides: ", lslides.getCurrentPosition());
@@ -106,6 +114,7 @@ public class Teleop extends LinearOpMode{
             telemetry.addData("blue: ", ground.blue());
             telemetry.addData("red: ", ground.red());
 
+            telemetry.addData("box: ", outtake.getPosition());
 
             telemetry.addData("x: ", xAxis.getCurrentPosition()*X_MULTIPLIER);
             telemetry.addData("y: ", yAxis.getCurrentPosition()*Y_MULTIPLIER);
@@ -135,11 +144,22 @@ public class Teleop extends LinearOpMode{
         //slides
         slides();
 
-        //Outtake
+        if(Math.abs(lslides.getCurrentPosition()) > 500){
+            outtake.setPosition(0.1);
+        }
 
-        outtake.setPower(gamepad2.right_bumper ? -0.6 : gamepad2.right_stick_x);
+        if(Math.abs(lslides.getCurrentPosition()) < 500){
+            outtake.setPosition(0.6);//dropoff value
+        }
+        if(gamepad2.cross){
+            outtake.setPosition(0.6);//works
+        }
+
+        if(gamepad2.triangle){
+            outtake.setPosition(0.1);
+        }
         //Intake
-        intakeAngle.setPosition(intakeAngle.getPosition() + (gamepad2.right_stick_y*0.05));
+        intakeAngle.setPosition((intakeAngle.getPosition() + (gamepad2.right_stick_y*0.05))*0.9);
 
         intake.setPower(gamepad2.left_bumper  ? -1*gamepad2.right_trigger : gamepad2.right_trigger);
         transfer.setPower(gamepad2.left_bumper  ? -1*gamepad2.right_trigger : gamepad2.right_trigger);
@@ -162,7 +182,7 @@ public class Teleop extends LinearOpMode{
             }).start();
         }
 
-        xAxis.setPower(gamepad2.left_bumper ? gamepad2.left_trigger : -gamepad2.left_trigger);
+        //xAxis.setPower(gamepad2.left_bumper ? gamepad2.left_trigger : -gamepad2.left_trigger);
     }
     public void robotCentricPlus() {
         double x, y, mag, rads, rangle;
@@ -214,6 +234,26 @@ public class Teleop extends LinearOpMode{
         lslides.setPower(gamepad2.left_stick_y*0.7);
 
     }
+    /*
+    public void imuHelp(){
+        double rads = 0;
+        if(gamepad1.dpad_left){rads = 90;}
+        if(gamepad1.dpad_right){rads = 270;}
+        if(gamepad1.dpad_down){rads = 180;}
+        double rangle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS).firstAngle;
+        double turn = (rads < rangle) ? (Math.toRadians(360) - rangle) + (Math.abs(0 - rads)) : rads - rangle;
+        double equationone = (Math.sin(turn + (Math.PI / 4)));
+        double equationtwo = (Math.sin(turn - (Math.PI / 4)));
+
+
+        rightFront.setPower(equationone);
+        leftRear.setPower(equationone);
+        rightRear.setPower(-equationtwo);
+        leftFront.setPower(-equationtwo);
+
+    }
+
+     */
 
 
 }

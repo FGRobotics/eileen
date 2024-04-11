@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.graphics.Color;
-
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -18,15 +16,16 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-@Autonomous(name = "BlueNear")
+import java.util.concurrent.atomic.AtomicBoolean;
 
-public class BlueNear extends LinearOpMode {
+@Autonomous(name = "color test")
+
+public class ColorSensorTest extends LinearOpMode {
     public static final double TICKS_PER_REV = 384.5;
     public static final double MAX_RPM = 435;
     public static double WHEEL_RADIUS = 2; // in
@@ -45,6 +44,9 @@ public class BlueNear extends LinearOpMode {
     private int kpV = 2;
     private int kIx = 1;
     private int kPtheta = 16;
+
+    private int redTot = 0;
+    private int blueTot=0;
 
     private int tickMark = 2;
     ColorSensor tagScanner, ground;
@@ -108,7 +110,7 @@ public class BlueNear extends LinearOpMode {
         Eileen robot = new Eileen(rightFront, leftFront, rightRear, leftRear, xAxis, yAxis, transfer, lslides, outtake,
                 tagScanner, frontDist, imu, ground);
 
-        ContourPipelineBlueClose myPipeline = new ContourPipelineBlueClose();
+        ContourPipelineRedClose myPipeline = new ContourPipelineRedClose();
         webcam.setPipeline(myPipeline);
 
         OpenCvWebcam finalWebcam = webcam;
@@ -140,7 +142,7 @@ public class BlueNear extends LinearOpMode {
 
 
             telemetry.addData("tick mark: ", tickMark);
-            telemetry.addData("Circles: ",myPipeline.numCircles);
+            telemetry.addData("Circles: ", myPipeline.numCircles);
 
             telemetry.addData("startheading: ", startHeading);
             telemetry.update();
@@ -149,149 +151,59 @@ public class BlueNear extends LinearOpMode {
 
         waitForStart();
 
+        //MOVEMENT STARTS HERE
+        updateMeans();
+        colorOdo(1, 1, startHeading, robot);
+    }
+    public void colorOdo(int upperBound,int lowerBound, double straightHeading, Eileen robot){
+        ElapsedTime timer = new ElapsedTime();
+        timer.reset();
+        while (!diffCheck() && timer.seconds() < 8){
 
+            telemetry.addData("last red: ", redTot);
+            telemetry.addData("red: ", ground.red());
+            telemetry.addData("% diff: ", (ground.red() - redTot)/ redTot);
+            telemetry.update();
+            double fix = robot.strafePID(straightHeading);
 
-        //branch out to drop on left
-
-        if (tickMark == 3) {
-            robot.odo(32, X_MULTIPLIER, 1, startHeading);//forward
-            sleep(200);
-
-
-            robot.pivotLeft(startHeading + 90, 1);//pivot right
-            sleep(200);
-
-
-            robot.colorOdo(1400,0, startHeading+90);
-            sleep(200);
-            robot.colorOdo(5000,1400, startHeading+90);
-            sleep(200);
-
-            robot.spit();//drop
-            sleep(200);
-
-
-
-            robot.odo(26.5, X_MULTIPLIER, 1, startHeading+90);//forward
-            sleep(200);
-            //-------------------------------------------------------Creep Up
-
-            robot.distance(4.5, startHeading+90);
-            sleep(200);
-            //---------------------------------------------------------COLOR Strafe
-            robot.strafe(2,Y_MULTIPLIER,1,startHeading+90);
-            sleep(200);
-
-            robot.slidesOut();
-            sleep(200);
-            robot.drop();
-            sleep(500);
-            robot.homeSlides();
-            sleep(200);
-
-            robot.strafe(23,Y_MULTIPLIER,-1,startHeading+90);
-            sleep(200);
-            robot.odo(4, X_MULTIPLIER, 1, startHeading+90);//forward
-        }
-
-
-
-        //branch out to drop on middle
-        if (tickMark == 2) {
-            robot.odo(25, X_MULTIPLIER, 1, startHeading);//forward
-            sleep(200);
-
-            robot.turnRight(startHeading-180);//flip 180
-            sleep(200);
-
-            robot.colorOdo(1400,0, startHeading-180);
-            sleep(200);
-            robot.colorOdo(5000,1400, startHeading-180);
-            sleep(200);
-
-
-            robot.spit();//drop
-            sleep(200);
-
-            robot.odo(4.5, X_MULTIPLIER, 1, startHeading-180);//forward
-            sleep(200);
-
-            robot.turnRight(startHeading+90);//face the board
-            sleep(200);
-
-            robot.odo(16, X_MULTIPLIER, 1, startHeading + 90);//forward
-            sleep(200);
-
-            robot.strafe(2.5,Y_MULTIPLIER,1,startHeading+90);
-            sleep(200);
-            //-------------------------------------------------------Creep Up-------------------------------------
-            robot.distance(4.5, startHeading+90);
-            sleep(200);
-
-
-            robot.slidesOut();
-            sleep(200);
-
-            robot.drop();
-            sleep(500);
-            robot.homeSlides();
-            sleep(200);
-
-            robot.strafe(18,Y_MULTIPLIER,-1,startHeading+90);
-            sleep(200);
-            robot.odo(4, X_MULTIPLIER, 1, startHeading+90);//forward
+            rightFront.setPower((0.15+ fix));
+            leftFront.setPower((0.2 - fix));
+            leftRear.setPower((0.15  - fix));
+            rightRear.setPower((0.2 + fix));
 
         }
 
-
-        if (tickMark == 1) {
-            robot.odo(32, X_MULTIPLIER, 1, startHeading);//forward
-            sleep(200);
-
-            robot.pivotLeft(startHeading + 90,1);//pivot right
-            sleep(200);
-
-
-
-            robot.odo(15, X_MULTIPLIER, 1, startHeading+90);//forward
-            sleep(200);
-            robot.colorOdo(1400,0, startHeading+90);
-            sleep(200);
-            robot.colorOdo(5000,1400, startHeading+90);
-            sleep(200);
-
-            robot.spit();//drop
-            sleep(200);
-
-
-
-            robot.odo(13, X_MULTIPLIER, 1, startHeading+90);//forward
-            sleep(200);
-            //-------------------------------------------------------Creep Up
-            robot.distance(4.5, startHeading+90);
-            sleep(200);
-            //----------------------------------------------------TAG SCAN???
-            robot.strafe(7,Y_MULTIPLIER,-1,startHeading+90);
-            sleep(200);
-
-            robot.slidesOut();
-            sleep(200);
-
-
-            robot.drop();
-            sleep(500);
-            robot.homeSlides();
-            sleep(200);
-
-            robot.strafe(15,Y_MULTIPLIER,-1,startHeading+90);
-            sleep(200);
-            robot.odo(4, X_MULTIPLIER, 1, startHeading+90);//forward
-
-        }
-
-
+        rightFront.setPower(0);
+        leftFront.setPower(0);
+        leftRear.setPower(0);
+        rightRear.setPower(0);
+        yAxis.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        xAxis.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }//colorODO
+    public void updateMeans(){
+        redTot = ground.red();
+        blueTot = ground.blue();
 
     }
+    public boolean diffCheck(){
+        //Checks if current color sensor readings are different than the average value by more than 18%
+        int red = ground.red();
+        int blue = ground.blue();
 
+        int avgred = redTot;
+        int avgblue = blueTot;
 
+        double blueDiff = (blue - avgblue)/avgblue;
+        double redDiff = (red - avgred)/avgred;
+
+        if(blueDiff > 0.10 || redDiff > 0.10){
+            redTot = 0;
+            blueTot = 0;
+            updateMeans();
+            return true;
+        }
+        updateMeans();
+        return false;
+
+    }
 }

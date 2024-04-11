@@ -164,11 +164,9 @@ public class RedFar extends LinearOpMode {
 
 
             sleep(200);
-            robot.pivotLeft(startHeading+85, 1);
+            robot.pivotLeft(startHeading+90, 1);
             sleep(200);
-            robot.colorOdoRed(1000,0,startHeading+85, 1);
-            sleep(200);
-            robot.colorOdoRed(5000,1000,startHeading+85, 1);
+            robot.colorOdo(1000,0,startHeading+90);
 
             sleep(200);
             robot.spit();//drop
@@ -177,12 +175,10 @@ public class RedFar extends LinearOpMode {
             robot.pivotLeft(startHeading, -1);
             robot.strafe(2, Y_MULTIPLIER, 1, startHeading);
 
-            robot.colorOdoRed(1300,0,startHeading, 1);
-            sleep(200);
-            robot.colorOdoRed(5000,1300,startHeading, 1);
+            robot.colorOdo(1300,0,startHeading);
             sleep(200);
 
-            robot.odo(1.5, X_MULTIPLIER, 1, startHeading);//forward
+            robot.odo(3.5, X_MULTIPLIER, 1, startHeading);//forward
 
 
 
@@ -190,25 +186,24 @@ public class RedFar extends LinearOpMode {
 
         if(tickMark == 2) {//------------------------------------------------------Middle Mark----------------------------------------------
             robot.strafe(6, Y_MULTIPLIER, -1, startHeading);
-            robot.odo(32.5, X_MULTIPLIER, 1, startHeading);//forward
+            robot.odo(28.5, X_MULTIPLIER, 1, startHeading);//forward
             robot.strafe(6, Y_MULTIPLIER, 1, startHeading);
             sleep(200);
-            robot.colorOdoRed(1000,0,startHeading, 1);
+            robot.colorOdo(1000,0,startHeading);
             sleep(200);
-            robot.colorOdoRed(5000,1400,startHeading, 1);
+            robot.odo(1, X_MULTIPLIER, 0.5, startHeading);//forward
+            robot.spit();
             sleep(200);
             robot.odo(1.5,X_MULTIPLIER,0.65,startHeading);
             sleep(200);
-            robot.spit();
-            sleep(250);
 
         }
 
         if(tickMark == 1) {//-------------------------------------------------------left Mark---------------------------------------
             ElapsedTime timer = new ElapsedTime();
-            robot.odo(32.5, X_MULTIPLIER, 1, startHeading);//forward
+            robot.odo(30.5, X_MULTIPLIER, 1, startHeading);//forward
             sleep(200);
-            robot.stripStrafe(20, Y_MULTIPLIER, -1, startHeading, 1400);
+            robot.stripStrafe(8, Y_MULTIPLIER, -1, startHeading, 1400);
             sleep(200);
             robot.spit();//drop
             sleep(200);
@@ -228,13 +223,13 @@ public class RedFar extends LinearOpMode {
             sleep(200);
             robot.distance(4.5, startHeading);
             sleep(200);
-            robot.slides(1100, 1);
+            //robot.slidesOut();
             sleep(200);
-            robot.drop();
+            //robot.drop();
 
             sleep(300);
 
-            robot.homeSlides();
+            //robot.homeSlides();
             sleep(200);
 
 
@@ -252,16 +247,17 @@ public class RedFar extends LinearOpMode {
         startHeading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;//reset straight angle
         startHeading = (startHeading < 0) ? 360 + startHeading : startHeading;//reset straight angle
 
-        intakeAngle.setPosition(.7);
+        intakeAngle.setPosition(.3);
         robot.strafe(1.5, Y_MULTIPLIER, -1, startHeading);// line up
         sleep(200);
         intake.setPower(1);
+        transfer.setPower(1);
         robot.odo(16,X_MULTIPLIER,-0.75,startHeading);// go back
         sleep(200);
 
         //robot.colorOdoRed(1000,0, startHeading, -1);//line up
-        robot.stripStrafe(8, Y_MULTIPLIER, 1, startHeading, 1200);
-        intakeAngle.setPosition(.9);//drop
+        robot.stripStrafe(4, Y_MULTIPLIER, 1, startHeading, 1200);
+        intakeAngle.setPosition(.45);//drop
         sleep(800);
         new Thread(()->{
             ElapsedTime timer = new ElapsedTime();
@@ -275,26 +271,19 @@ public class RedFar extends LinearOpMode {
 
         robot.odo(1.5, X_MULTIPLIER, -0.8, startHeading);
         sleep(2000);
-        robot.strafe(1, Y_MULTIPLIER, -1, startHeading);// line up
-        transfer.setPower(0);
-        intake.setPower(0);
+        robot.strafe(3, Y_MULTIPLIER, -1, startHeading);// line up
+        intake.setPower(-1);
 
         new Thread(()->{
             ElapsedTime timer = new ElapsedTime();
             timer.reset();
-            while(timer.seconds()<.2){
-                continue;
-            }
-            transfer.setPower(1);
-        }).start();
-        new Thread(()->{
-            ElapsedTime timer = new ElapsedTime();
-            timer.reset();
-            while(timer.seconds()<2){
+            while(timer.seconds()<3){
                 continue;
             }
             transfer.setPower(0);
+            intake.setPower(0);
         }).start();
+
         robot.odo(79, X_MULTIPLIER, 1.5, startHeading);//forward
         sleep(200);
 
@@ -314,13 +303,13 @@ public class RedFar extends LinearOpMode {
         sleep(200);
 
 
-        robot.slides(1100, 1);
+        //robot.slidesOut();
         sleep(200);
-        robot.drop();
+        //robot.drop();
 
         sleep(300);
 
-        robot.homeSlides();
+        //robot.homeSlides();
         sleep(200);
         /*
         if(tickMark == 1){

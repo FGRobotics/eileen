@@ -159,9 +159,9 @@ public class RedNear extends LinearOpMode {
 
 
             sleep(200);
-            robot.colorOdoRed(1200,0, startHeading-90,1);
+            robot.colorOdo(1200,0, startHeading-90);
             sleep(200);
-            robot.colorOdoRed(5000,1200, startHeading-90,1);
+            robot.colorOdo(5000,1200, startHeading-90);
 
             robot.spit();//drop
 
@@ -178,7 +178,7 @@ public class RedNear extends LinearOpMode {
             //CREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEP FORWARD
             robot.distance(4.5, startHeading-90);
 
-            robot.slides(1100,1);
+            robot.slidesOut();
 
             sleep(200);
             robot.drop();
@@ -198,9 +198,9 @@ public class RedNear extends LinearOpMode {
             robot.turnLeft(startHeading-180);//flip 180
 
             sleep(200);
-            robot.colorOdoRed(1000,0, startHeading-180,1);
+            robot.colorOdo(1000,0, startHeading-180);
             sleep(200);
-            robot.colorOdoRed(5000,1000, startHeading-180,1);
+            robot.colorOdo(5000,1000, startHeading-180);
 
             robot.spit();//drop
 
@@ -215,7 +215,7 @@ public class RedNear extends LinearOpMode {
             //CREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEP FORWARD
             robot.distance(4.5, startHeading-90);
 
-            robot.slides(1100,1);
+            robot.slidesOut();
 
             sleep(200);
             robot.drop();
@@ -239,9 +239,9 @@ public class RedNear extends LinearOpMode {
             robot.odo(15, X_MULTIPLIER, 1, startHeading-90);//forward
             //SLEEP FOR LUXONS HERE
             sleep(200);
-            robot.colorOdoRed(1200,0, startHeading-90,1);
+            robot.colorOdo(1200,0, startHeading-90);
             sleep(200);
-            robot.colorOdoRed(5000,1200, startHeading-90,1);
+            robot.colorOdo(5000,1200, startHeading-90);
 
             robot.spit();//drop
 
@@ -251,12 +251,12 @@ public class RedNear extends LinearOpMode {
             //CREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEP FORWARD
             robot.distance(4.5, startHeading-90);
 
-            robot.colorStrafe(6.5,Y_MULTIPLIER,1,startHeading-90, (tagScanner.alpha() >200));
+            robot.strafe(6.5,Y_MULTIPLIER,1,startHeading-90);
 
             //CREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEP FORWARD
             robot.distance(4.5, startHeading-90);
 
-            robot.slides(1100,1);
+            robot.slidesOut();
             sleep(200);
             robot.drop();
             sleep(200);

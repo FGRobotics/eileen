@@ -40,7 +40,6 @@ public class ContourPipelineBlueFar extends OpenCvPipeline {
             Imgproc.blur(src, src,new Size(5,5));
 
             //Finding Circles
-
             Mat circles = new Mat();
             Imgproc.HoughCircles(src, circles, Imgproc.HOUGH_GRADIENT, 1.0,
                     (double)src.rows()/5, // change this value to detect circles with different distances to each other

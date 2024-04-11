@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.graphics.Color;
-
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -12,21 +10,19 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-@Autonomous(name = "BlueNear")
+@Autonomous(name = "BlueNearSpeed")
 
-public class BlueNear extends LinearOpMode {
+public class BlueNearSpeed extends LinearOpMode {
     public static final double TICKS_PER_REV = 384.5;
     public static final double MAX_RPM = 435;
     public static double WHEEL_RADIUS = 2; // in
@@ -64,8 +60,8 @@ public class BlueNear extends LinearOpMode {
         xAxis = hardwareMap.get(DcMotor.class, "xAxis");
         yAxis = hardwareMap.get(DcMotor.class, "yAxis");
 
-        rightRear.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
 
         leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -140,7 +136,7 @@ public class BlueNear extends LinearOpMode {
 
 
             telemetry.addData("tick mark: ", tickMark);
-            telemetry.addData("Circles: ",myPipeline.numCircles);
+            telemetry.addData("Circles: ", myPipeline.numCircles);
 
             telemetry.addData("startheading: ", startHeading);
             telemetry.update();
@@ -149,149 +145,56 @@ public class BlueNear extends LinearOpMode {
 
         waitForStart();
 
-
-
-        //branch out to drop on left
-
-        if (tickMark == 3) {
-            robot.odo(32, X_MULTIPLIER, 1, startHeading);//forward
-            sleep(200);
-
-
-            robot.pivotLeft(startHeading + 90, 1);//pivot right
-            sleep(200);
-
-
-            robot.colorOdo(1400,0, startHeading+90);
-            sleep(200);
-            robot.colorOdo(5000,1400, startHeading+90);
-            sleep(200);
-
-            robot.spit();//drop
-            sleep(200);
-
-
-
-            robot.odo(26.5, X_MULTIPLIER, 1, startHeading+90);//forward
-            sleep(200);
-            //-------------------------------------------------------Creep Up
-
-            robot.distance(4.5, startHeading+90);
-            sleep(200);
-            //---------------------------------------------------------COLOR Strafe
-            robot.strafe(2,Y_MULTIPLIER,1,startHeading+90);
-            sleep(200);
-
-            robot.slidesOut();
-            sleep(200);
-            robot.drop();
-            sleep(500);
-            robot.homeSlides();
-            sleep(200);
-
-            robot.strafe(23,Y_MULTIPLIER,-1,startHeading+90);
-            sleep(200);
-            robot.odo(4, X_MULTIPLIER, 1, startHeading+90);//forward
-        }
-
-
-
-        //branch out to drop on middle
-        if (tickMark == 2) {
-            robot.odo(25, X_MULTIPLIER, 1, startHeading);//forward
-            sleep(200);
-
-            robot.turnRight(startHeading-180);//flip 180
-            sleep(200);
-
-            robot.colorOdo(1400,0, startHeading-180);
-            sleep(200);
-            robot.colorOdo(5000,1400, startHeading-180);
-            sleep(200);
-
-
-            robot.spit();//drop
-            sleep(200);
-
-            robot.odo(4.5, X_MULTIPLIER, 1, startHeading-180);//forward
-            sleep(200);
-
-            robot.turnRight(startHeading+90);//face the board
-            sleep(200);
-
-            robot.odo(16, X_MULTIPLIER, 1, startHeading + 90);//forward
-            sleep(200);
-
-            robot.strafe(2.5,Y_MULTIPLIER,1,startHeading+90);
-            sleep(200);
-            //-------------------------------------------------------Creep Up-------------------------------------
-            robot.distance(4.5, startHeading+90);
-            sleep(200);
-
-
-            robot.slidesOut();
-            sleep(200);
-
-            robot.drop();
-            sleep(500);
-            robot.homeSlides();
-            sleep(200);
-
-            robot.strafe(18,Y_MULTIPLIER,-1,startHeading+90);
-            sleep(200);
-            robot.odo(4, X_MULTIPLIER, 1, startHeading+90);//forward
-
-        }
-
-
+        //MOVEMENT STARTS HERE
+        robot.omniodo(24, 16);//Omni to backboard- X is Lateral Distance- right + / left -    ||Y is forward Distance
+        robot.turnLeft(startHeading + 90);//Turn
         if (tickMark == 1) {
-            robot.odo(32, X_MULTIPLIER, 1, startHeading);//forward
-            sleep(200);
+            robot.strafe(5, Y_MULTIPLIER, -1, startHeading + 90);
+        }//Strafe to left if indicated
+        if (tickMark == 3) {
+            robot.strafe(3.75, Y_MULTIPLIER, 1, startHeading + 90);
+        }//Strafe to right if indicated
+        robot.distance(5,startHeading+90);//Distance Sensor to BB
+        /*
+        robot.slidesOut();
+        sleep(200);
+        robot.homeSlides();
+         */
+        sleep(2000);
+        robot.odo(16, X_MULTIPLIER, -1.5, startHeading+90);//Go Backwards
+        sleep(200);
 
-            robot.pivotLeft(startHeading + 90,1);//pivot right
-            sleep(200);
+        //left branch ------------------------------------------------------------------------------
+        if(tickMark == 1){
+            robot.strafe(5, Y_MULTIPLIER, 1, startHeading + 90);
+            robot.colorOdo(1,1, startHeading+90);
+            robot.odo(1, X_MULTIPLIER, 0.5, startHeading+90);
+            robot.spit();
+            robot.odo(1, X_MULTIPLIER, 0.5, startHeading+90);
+            robot.strafe(20, Y_MULTIPLIER, -1, startHeading + 90);
+            robot.odo(15, X_MULTIPLIER, 1, startHeading+90);
+        }//revert to middle
 
-
-
-            robot.odo(15, X_MULTIPLIER, 1, startHeading+90);//forward
-            sleep(200);
-            robot.colorOdo(1400,0, startHeading+90);
-            sleep(200);
-            robot.colorOdo(5000,1400, startHeading+90);
-            sleep(200);
-
-            robot.spit();//drop
-            sleep(200);
-
-
-
-            robot.odo(13, X_MULTIPLIER, 1, startHeading+90);//forward
-            sleep(200);
-            //-------------------------------------------------------Creep Up
-            robot.distance(4.5, startHeading+90);
-            sleep(200);
-            //----------------------------------------------------TAG SCAN???
-            robot.strafe(7,Y_MULTIPLIER,-1,startHeading+90);
-            sleep(200);
-
-            robot.slidesOut();
-            sleep(200);
-
-
-            robot.drop();
-            sleep(500);
-            robot.homeSlides();
-            sleep(200);
-
-            robot.strafe(15,Y_MULTIPLIER,-1,startHeading+90);
-            sleep(200);
-            robot.odo(4, X_MULTIPLIER, 1, startHeading+90);//forward
-
+        //middle branch-----------------------------------------------------------------------------
+        if(tickMark==2){
+           robot.stripStrafe(12, Y_MULTIPLIER, 1, startHeading+90, 1);
+           robot.spit();
+            robot.odo(1, X_MULTIPLIER, 0.5, startHeading+90);
+            robot.strafe(28, Y_MULTIPLIER, -1, startHeading+90);
+            robot.odo(20, X_MULTIPLIER, 1, startHeading+90);
         }
 
+        //right branch------------------------------------------------------------------------------
+        if(tickMark == 3){
+            robot.strafe(3, Y_MULTIPLIER, -1, startHeading + 90);
+            robot.odo(13, X_MULTIPLIER, -1, startHeading+90);
+            robot.colorOdo(1,1, startHeading+90);
+            robot.spit();
+            robot.odo(13, X_MULTIPLIER, 1, startHeading+90);
+            robot.strafe(20, Y_MULTIPLIER, -1, startHeading + 90);
+            robot.odo(15, X_MULTIPLIER, 1, startHeading+90);
+        }//revert to middle
 
 
     }
-
-
 }
